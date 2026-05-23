@@ -239,17 +239,15 @@
       .nav-links   { gap: 14px !important; }
       .nav-links a { font-size: 0.78rem !important; }
 
-      /* Hero wrapper — less scroll budget on mobile */
+      /* Hero wrapper — 200vh on mobile (100vh sticky + 100vh scroll budget) */
       #hero-wrapper { height: 200vh; }
 
-      /* Hero image — static cover on mobile (animation handled in JS) */
+      /* Hero image — keep 200vh tall so animation has room to pan.
+         Portrait image at 200vh is ~113vw wide on mobile — covers full width. */
       #hero-img {
-        height: 100vh;
+        height: 200vh;
         width: auto;
         min-width: 100%;
-        top: 0;
-        bottom: auto;
-        object-fit: cover;
       }
 
       /* Hero name card */
@@ -563,30 +561,22 @@
   let targetY  = 0;
 
   function computeTarget() {
-    // On mobile the image is CSS-positioned statically; skip Y animation
-    if (window.innerWidth <= 700) return 0;
-
-    const vh       = window.innerHeight;
-    const budget   = vh * 2;                               // 200 vh of scroll = full animation
-    const progress = Math.min(window.scrollY / budget, 1); // 0 → 1
+    const vh      = window.innerHeight;
+    const mobile  = window.innerWidth <= 700;
 
     /*
-      T maps progress 0→1 to +40vh → -30vh  (70 vh total arc).
+      Desktop: wrapper = 300vh → scroll budget = 200vh → budget = vh * 2
+               arc: +40vh → -30vh  (70vh total)
 
-      At T = +40 vh (start, scroll = 0):
-        • figure is at viewport y ≈ 87 vh  (entering near the bottom)
-        • star   is at viewport y ≈ 16 vh  (glowing near the top)
-        → BOTH visible — you see where the figure is headed.
-
-      At T = -30 vh (end, scroll = 200 vh):
-        • figure is at viewport y ≈ 17 vh  (ascended to upper frame)
-        • star has exited above
-        → Figure has "reached the sky" through the building corridor.
-
-      The bottom-gradient overlay in #hero-overlay covers the small gap
-      that appears at the bottom when T goes negative.
+      Mobile:  wrapper = 200vh → scroll budget = 100vh → budget = vh * 1
+               arc: +30vh → -20vh  (50vh total, proportionally similar feel)
     */
-    return (0.40 - progress * 0.70) * vh;
+    const budget   = mobile ? vh * 1 : vh * 2;
+    const progress = Math.min(window.scrollY / budget, 1);
+
+    return mobile
+      ? (0.30 - progress * 0.50) * vh   // +30vh → -20vh on mobile
+      : (0.40 - progress * 0.70) * vh;  // +40vh → -30vh on desktop
   }
 
   function tick() {
