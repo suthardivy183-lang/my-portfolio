@@ -242,11 +242,16 @@
       /* Hero wrapper — 200vh on mobile (100vh sticky + 100vh scroll budget) */
       #hero-wrapper { height: 200vh; }
 
-      /* Hero image — keep 200vh tall so animation has room to pan.
-         Portrait image at 200vh is ~113vw wide on mobile — covers full width. */
+      /*
+        Hero image — fit to viewport WIDTH (not height) so the full cityscape
+        is visible: buildings on both sides + central corridor with figure
+        and star.  Image aspect (736:1308 ≈ 9:16) closely matches phones, so
+        100vw width gives ~82vh image height — leaves animation headroom
+        between top of image and top of viewport.
+      */
       #hero-img {
-        height: 200vh;
-        width: auto;
+        width: 100vw;
+        height: auto;
         min-width: 100%;
       }
 
@@ -566,16 +571,19 @@
 
     /*
       Desktop: wrapper = 300vh → scroll budget = 200vh → budget = vh * 2
-               arc: +40vh → -30vh  (70vh total)
+               Image is 200vh tall, bottom-anchored. Arc +40vh → -30vh.
 
       Mobile:  wrapper = 200vh → scroll budget = 100vh → budget = vh * 1
-               arc: +30vh → -20vh  (50vh total, proportionally similar feel)
+               Image is ~82vh tall (100vw width × aspect ratio), bottom-anchored.
+               Figure starts at ~78vh from top of viewport (lower portion),
+               star at ~49vh (middle).  Arc 0 → -40vh lifts the image so
+               the figure ascends to ~38vh and the star moves past the top.
     */
     const budget   = mobile ? vh * 1 : vh * 2;
     const progress = Math.min(window.scrollY / budget, 1);
 
     return mobile
-      ? (0.30 - progress * 0.50) * vh   // +30vh → -20vh on mobile
+      ? (0 - progress * 0.40) * vh      // 0 → -40vh on mobile
       : (0.40 - progress * 0.70) * vh;  // +40vh → -30vh on desktop
   }
 
