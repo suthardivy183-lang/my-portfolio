@@ -243,15 +243,16 @@
       #hero-wrapper { height: 200vh; }
 
       /*
-        Hero image — fit to viewport WIDTH (not height) so the full cityscape
-        is visible: buildings on both sides + central corridor with figure
-        and star.  Image aspect (736:1308 ≈ 9:16) closely matches phones, so
-        100vw width gives ~82vh image height — leaves animation headroom
-        between top of image and top of viewport.
+        Hero image — match the desktop strategy: make image TALLER than the
+        viewport so it always covers (no black top) AND has headroom to pan.
+        130vh = 100vh viewport cover + 30vh animation arc.
+        Width scales proportionally and overflows horizontally — some side
+        buildings get cropped, but the central corridor with figure + star
+        + pink sky remains visible, framed by inner buildings.
       */
       #hero-img {
-        width: 100vw;
-        height: auto;
+        height: 130vh;
+        width: auto;
         min-width: 100%;
       }
 
@@ -571,19 +572,21 @@
 
     /*
       Desktop: wrapper = 300vh → scroll budget = 200vh → budget = vh * 2
-               Image is 200vh tall, bottom-anchored. Arc +40vh → -30vh.
+               Image 200vh tall, bottom-anchored. Arc +40vh → -30vh.
+               Figure ascends 87vh → 17vh, star visible at start.
 
       Mobile:  wrapper = 200vh → scroll budget = 100vh → budget = vh * 1
-               Image is ~82vh tall (100vw width × aspect ratio), bottom-anchored.
-               Figure starts at ~78vh from top of viewport (lower portion),
-               star at ~49vh (middle).  Arc 0 → -40vh lifts the image so
-               the figure ascends to ~38vh and the star moves past the top.
+               Image 130vh tall, bottom-anchored. Arc 0 → -30vh.
+               Figure ascends ~65vh → ~35vh, star at ~19vh (visible at start,
+               exits top at end). Buildings' pink/sunset tops at ~22vh at
+               start, ascend to ~-8vh (just leaving frame) at end — matching
+               the desktop "ascent past the building tops" feel.
     */
     const budget   = mobile ? vh * 1 : vh * 2;
     const progress = Math.min(window.scrollY / budget, 1);
 
     return mobile
-      ? (0 - progress * 0.40) * vh      // 0 → -40vh on mobile
+      ? (0 - progress * 0.30) * vh      // 0 → -30vh on mobile
       : (0.40 - progress * 0.70) * vh;  // +40vh → -30vh on desktop
   }
 
