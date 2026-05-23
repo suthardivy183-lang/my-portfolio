@@ -234,14 +234,50 @@
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 700px) {
-      .about-grid  { grid-template-columns: 1fr !important; }
-      #nav         { padding: 16px 20px; }
-      .nav-links   { gap: 20px !important; }
-      .hero-card   { padding: 28px 22px !important; }
-      .hero-name   { font-size: 2.2rem !important; }
-      /* On narrow mobile let image cover full width */
-      #hero-img    { height: auto; width: 100%; bottom: auto; top: 50%;
-                     transform: translate(0, -50%); left: 0; }
+      /* Nav — tighten spacing so 4 links fit */
+      #nav         { padding: 13px 16px; }
+      .nav-links   { gap: 14px !important; }
+      .nav-links a { font-size: 0.78rem !important; }
+
+      /* Hero wrapper — less scroll budget on mobile */
+      #hero-wrapper { height: 200vh; }
+
+      /* Hero image — static cover on mobile (animation handled in JS) */
+      #hero-img {
+        height: 100vh;
+        width: auto;
+        min-width: 100%;
+        top: 0;
+        bottom: auto;
+        object-fit: cover;
+      }
+
+      /* Hero name card */
+      .hero-card  { padding: 26px 20px !important; max-width: 94% !important; }
+      .hero-name  { font-size: 1.9rem !important; }
+      .hero-btns  { flex-direction: column !important; gap: 10px !important; }
+
+      /* Sections — tighter padding */
+      #about   { padding: 64px 20px; }
+      #skills  { padding: 36px 20px 64px; }
+      #projects{ padding: 56px 20px 72px; }
+      #contact { padding: 56px 20px 72px; }
+
+      /* About — stack avatar above bio, centered */
+      .about-grid {
+        grid-template-columns: 1fr !important;
+        gap: 28px !important;
+        text-align: center;
+      }
+      .about-grid > div:first-child { align-items: center !important; }
+      .about-grid h2   { font-size: 1.65rem !important; }
+      .about-grid p    { font-size: 0.97rem !important; }
+
+      /* Project cards — full width */
+      .proj-card { padding: 22px 18px; }
+
+      /* Contact links — slightly smaller */
+      .c-link { padding: 13px 18px; font-size: 0.88rem; }
     }
   </style>
 </head>
@@ -297,7 +333,7 @@
         <p style="font-size:1rem;color:rgba(255,255,255,0.62);line-height:1.7;margin-bottom:26px;">
           Passionate developer building real-world products<br>at the edge of AI &amp; full-stack.
         </p>
-        <div style="display:flex;gap:14px;justify-content:center;">
+        <div class="hero-btns" style="display:flex;gap:14px;justify-content:center;">
           <a href="#projects" style="background:#4f8ef7;color:#fff;text-decoration:none;padding:11px 28px;border-radius:10px;font-weight:600;font-size:0.9rem;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.82'" onmouseout="this.style.opacity='1'">View Work</a>
           <a href="#contact"  style="border:1px solid rgba(255,255,255,0.22);color:#fff;text-decoration:none;padding:11px 28px;border-radius:10px;font-weight:600;font-size:0.9rem;background:transparent;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">Contact</a>
         </div>
@@ -527,6 +563,9 @@
   let targetY  = 0;
 
   function computeTarget() {
+    // On mobile the image is CSS-positioned statically; skip Y animation
+    if (window.innerWidth <= 700) return 0;
+
     const vh       = window.innerHeight;
     const budget   = vh * 2;                               // 200 vh of scroll = full animation
     const progress = Math.min(window.scrollY / budget, 1); // 0 → 1
